@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -290,63 +290,5 @@ namespace OAuth
             return random.Next(123400, 9999999).ToString();
         }
 
-    }
-
-    /// <summary>
-    /// Comparer class used to perform the sorting of the query parameters
-    /// </summary>
-    public sealed class QueryParameterComparer : IComparer<QueryParameter>
-    {
-
-        #region IComparer<QueryParameter> Members
-
-        public int Compare(QueryParameter x, QueryParameter y)
-        {
-            if (x.Name == y.Name)
-            {
-                return String.Compare(x.Value, y.Value);
-            }
-            else
-            {
-                return String.Compare(x.Name, y.Name);
-            }
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Provides an internal structure to sort the query parameter
-    /// </summary>
-    public sealed class QueryParameter
-    {
-        private string name = null;
-        private string value = null;
-
-        public QueryParameter(string name, string value)
-        {
-            this.name = name;
-            this.value = value;
-        }
-
-        public string Name
-        {
-            get { return name; }
-        }
-
-        public string Value
-        {
-            get { return value; }
-        }
-    }
-
-    /// <summary>
-    /// Provides a predefined set of algorithms that are supported officially by the protocol
-    /// </summary>
-    public enum SignatureTypes
-    {
-        HMACSHA1,
-        PLAINTEXT,
-        RSASHA1
     }
 }
