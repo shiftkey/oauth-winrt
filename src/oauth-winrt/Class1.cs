@@ -4,90 +4,31 @@ using System.Text;
 
 namespace OAuth
 {
-    public class OAuthBase
+    public sealed class OAuthBase
     {
-
-        /// <summary>
-        /// Provides a predefined set of algorithms that are supported officially by the protocol
-        /// </summary>
-        public enum SignatureTypes
-        {
-            HMACSHA1,
-            PLAINTEXT,
-            RSASHA1
-        }
-
-        /// <summary>
-        /// Provides an internal structure to sort the query parameter
-        /// </summary>
-        protected class QueryParameter
-        {
-            private string name = null;
-            private string value = null;
-
-            public QueryParameter(string name, string value)
-            {
-                this.name = name;
-                this.value = value;
-            }
-
-            public string Name
-            {
-                get { return name; }
-            }
-
-            public string Value
-            {
-                get { return value; }
-            }
-        }
-
-        /// <summary>
-        /// Comparer class used to perform the sorting of the query parameters
-        /// </summary>
-        protected class QueryParameterComparer : IComparer<QueryParameter>
-        {
-
-            #region IComparer<QueryParameter> Members
-
-            public int Compare(QueryParameter x, QueryParameter y)
-            {
-                if (x.Name == y.Name)
-                {
-                    return string.Compare(x.Value, y.Value);
-                }
-                else
-                {
-                    return string.Compare(x.Name, y.Name);
-                }
-            }
-
-            #endregion
-        }
-
-        protected const string OAuthVersion = "1.0";
-        protected const string OAuthParameterPrefix = "oauth_";
+        internal const string OAuthVersion = "1.0";
+        internal const string OAuthParameterPrefix = "oauth_";
 
         //
         // List of know and used oauth parameters' names
         //        
-        protected const string OAuthConsumerKeyKey = "oauth_consumer_key";
-        protected const string OAuthCallbackKey = "oauth_callback";
-        protected const string OAuthVersionKey = "oauth_version";
-        protected const string OAuthSignatureMethodKey = "oauth_signature_method";
-        protected const string OAuthSignatureKey = "oauth_signature";
-        protected const string OAuthTimestampKey = "oauth_timestamp";
-        protected const string OAuthNonceKey = "oauth_nonce";
-        protected const string OAuthTokenKey = "oauth_token";
-        protected const string OAuthTokenSecretKey = "oauth_token_secret";
+        internal const string OAuthConsumerKeyKey = "oauth_consumer_key";
+        internal const string OAuthCallbackKey = "oauth_callback";
+        internal const string OAuthVersionKey = "oauth_version";
+        internal const string OAuthSignatureMethodKey = "oauth_signature_method";
+        internal const string OAuthSignatureKey = "oauth_signature";
+        internal const string OAuthTimestampKey = "oauth_timestamp";
+        internal const string OAuthNonceKey = "oauth_nonce";
+        internal const string OAuthTokenKey = "oauth_token";
+        internal const string OAuthTokenSecretKey = "oauth_token_secret";
 
-        protected const string HMACSHA1SignatureType = "HMAC-SHA1";
-        protected const string PlainTextSignatureType = "PLAINTEXT";
-        protected const string RSASHA1SignatureType = "RSA-SHA1";
+        internal const string HMACSHA1SignatureType = "HMAC-SHA1";
+        internal const string PlainTextSignatureType = "PLAINTEXT";
+        internal const string RSASHA1SignatureType = "RSA-SHA1";
 
-        protected Random random = new Random();
+        internal Random random = new Random();
 
-        protected string unreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        internal string unreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>
         /// Helper function to compute a hash value
@@ -206,7 +147,7 @@ namespace OAuth
         /// <param name="token">The token, if available. If not available pass null or an empty string</param>
         /// <param name="tokenSecret">The token secret, if available. If not available pass null or an empty string</param>
         /// <param name="httpMethod">The http method used. Must be a valid HTTP method verb (POST,GET,PUT, etc)</param>
-        /// <param name="signatureType">The signature type. To use the default values use <see cref="OAuthBase.SignatureTypes">OAuthBase.SignatureTypes</see>.</param>
+        /// <param name="signatureType">The signature type. To use the default values use <see cref="SignatureTypes">OAuthBase.SignatureTypes</see>.</param>
         /// <returns>The signature base</returns>
         public string GenerateSignatureBase(Uri url, string consumerKey, string token, string tokenSecret, string httpMethod, string timeStamp, string nonce, string signatureType, out string normalizedUrl, out string normalizedRequestParameters)
         {
@@ -332,7 +273,7 @@ namespace OAuth
         /// Generate the timestamp for the signature        
         /// </summary>
         /// <returns></returns>
-        public virtual string GenerateTimeStamp()
+        internal string GenerateTimeStamp()
         {
             // Default implementation of UNIX time of the current UTC time
             TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
@@ -343,11 +284,69 @@ namespace OAuth
         /// Generate a nonce
         /// </summary>
         /// <returns></returns>
-        public virtual string GenerateNonce()
+        internal string GenerateNonce()
         {
             // Just a simple implementation of a random number between 123400 and 9999999
             return random.Next(123400, 9999999).ToString();
         }
 
+    }
+
+    /// <summary>
+    /// Comparer class used to perform the sorting of the query parameters
+    /// </summary>
+    public sealed class QueryParameterComparer : IComparer<QueryParameter>
+    {
+
+        #region IComparer<QueryParameter> Members
+
+        public int Compare(QueryParameter x, QueryParameter y)
+        {
+            if (x.Name == y.Name)
+            {
+                return String.Compare(x.Value, y.Value);
+            }
+            else
+            {
+                return String.Compare(x.Name, y.Name);
+            }
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Provides an internal structure to sort the query parameter
+    /// </summary>
+    public sealed class QueryParameter
+    {
+        private string name = null;
+        private string value = null;
+
+        public QueryParameter(string name, string value)
+        {
+            this.name = name;
+            this.value = value;
+        }
+
+        public string Name
+        {
+            get { return name; }
+        }
+
+        public string Value
+        {
+            get { return value; }
+        }
+    }
+
+    /// <summary>
+    /// Provides a predefined set of algorithms that are supported officially by the protocol
+    /// </summary>
+    public enum SignatureTypes
+    {
+        HMACSHA1,
+        PLAINTEXT,
+        RSASHA1
     }
 }
