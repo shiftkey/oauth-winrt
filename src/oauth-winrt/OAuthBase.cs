@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
+using Windows.Storage.Streams;
 
 namespace OAuth
 {
@@ -36,7 +40,7 @@ namespace OAuth
         /// <param name="hashAlgorithm">The hashing algoirhtm used. If that algorithm needs some initialization, like HMAC and its derivatives, they should be initialized prior to passing it to this function</param>
         /// <param name="data">The data to hash</param>
         /// <returns>a Base64 string of the hash value</returns>
-        private string ComputeHash(HashAlgorithm hashAlgorithm, string data)
+        private IBuffer ComputeHash(CryptographicKey hashAlgorithm, string data)
         {
             if (hashAlgorithm == null)
             {
@@ -48,10 +52,11 @@ namespace OAuth
                 throw new ArgumentNullException("data");
             }
 
-            byte[] dataBuffer = System.Text.Encoding.ASCII.GetBytes(data);
-            byte[] hashBytes = hashAlgorithm.ComputeHash(dataBuffer);
+            var signature = CryptographicEngine.Sign(
+                hashAlgorithm,
+                CryptographicBuffer.ConvertStringToBinary(data, BinaryStringEncoding.Utf8));
 
-            return Convert.ToBase64String(hashBytes);
+            return signature;
         }
 
         /// <summary>
@@ -215,7 +220,7 @@ namespace OAuth
         /// <param name="signatureBase">The signature based as produced by the GenerateSignatureBase method or by any other means</param>
         /// <param name="hash">The hash algorithm used to perform the hashing. If the hashing algorithm requires initialization or a key it should be set prior to calling this method</param>
         /// <returns>A base64 string of the hash value</returns>
-        public string GenerateSignatureUsingHash(string signatureBase, HashAlgorithm hash)
+        public IBuffer GenerateSignatureUsingHash(string signatureBase, CryptographicKey hash)
         {
             return ComputeHash(hash, signatureBase);
         }
@@ -254,14 +259,17 @@ namespace OAuth
             switch (signatureType)
             {
                 case SignatureTypes.PLAINTEXT:
-                    return HttpUtility.UrlEncode(string.Format("{0}&{1}", consumerSecret, tokenSecret));
+                    return WebUtility.UrlEncode(string.Format("{0}&{1}", consumerSecret, tokenSecret));
                 case SignatureTypes.HMACSHA1:
-                    string signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, HMACSHA1SignatureType, out normalizedUrl, out normalizedRequestParameters);
+                    var signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, HMACSHA1SignatureType, out normalizedUrl, out normalizedRequestParameters);
 
-                    HMACSHA1 hmacsha1 = new HMACSHA1();
-                    hmacsha1.Key = Encoding.ASCII.GetBytes(string.Format("{0}&{1}", UrlEncode(consumerSecret), string.IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret)));
+                    var value = string.Format("{0}&{1}", UrlEncode(consumerSecret), string.IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret));
+                    var algorithm = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
+                    var keymaterial = CryptographicBuffer.ConvertStringToBinary(value, BinaryStringEncoding.Utf8);
+                    var hmacKey = algorithm.CreateKey(keymaterial);
 
-                    return GenerateSignatureUsingHash(signatureBase, hmacsha1);
+                    var signature = GenerateSignatureUsingHash(signatureBase, hmacKey);
+                    return CryptographicBuffer.ConvertBinaryToString(BinaryStringEncoding.Utf8, signature);
                 case SignatureTypes.RSASHA1:
                     throw new NotImplementedException();
                 default:
