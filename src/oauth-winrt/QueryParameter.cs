@@ -5,23 +5,14 @@ namespace OAuth
     /// </summary>
     public sealed class QueryParameter
     {
-        private string name = null;
-        private string value = null;
-
-        public QueryParameter(string name, string value)
+        public QueryParameter(string key, string val)
         {
-            this.name = name;
-            this.value = value;
+            Name = key;
+            Value = val;
         }
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name { get; private set; }
 
-        public string Value
-        {
-            get { return value; }
-        }
+        public string Value { get; private set; }
     }
 }

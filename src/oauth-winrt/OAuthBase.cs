@@ -102,9 +102,9 @@ namespace OAuth
         /// </summary>
         /// <param name="value">The value to Url encode</param>
         /// <returns>Returns a Url encoded string</returns>
-        protected string UrlEncode(string value)
+        internal string UrlEncode(string value)
         {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             foreach (char symbol in value)
             {
@@ -126,9 +126,9 @@ namespace OAuth
         /// </summary>
         /// <param name="parameters">The list of parameters already sorted</param>
         /// <returns>a string representing the normalized parameters</returns>
-        protected string NormalizeRequestParameters(IList<QueryParameter> parameters)
+        internal string NormalizeRequestParameters(IList<QueryParameter> parameters)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             QueryParameter p = null;
             for (int i = 0; i < parameters.Count; i++)
             {
