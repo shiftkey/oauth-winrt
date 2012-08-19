@@ -27,7 +27,7 @@ This code was valid before:
 
 But now it spits out a compiler error in RTM:
 
-`The parameterized constructor 'OAuth.QueryParameter..ctor(System.String, System.String)' has a parameter named 'value' which is the same as the default return value name. Consider using another name for the parameter.`
+    The parameterized constructor 'OAuth.QueryParameter..ctor(System.String, System.String)' has a parameter named 'value' which is the same as the default return value name. Consider using another name for the parameter.
 
 And the fix is reasonably simple:
 
