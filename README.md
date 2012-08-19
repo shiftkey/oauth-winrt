@@ -1,6 +1,6 @@
 # OAuth-WinRT
 
-A quick sample for migrating some .NET code to Windows Runtime
+A quick sample demonstrating migrating a simple .NET library to Windows Runtime.
 
 This is the original source: [http://oauth.googlecode.com/svn/code/csharp/OAuthBase.cs](http://oauth.googlecode.com/svn/code/csharp/OAuthBase.cs).
 
@@ -8,7 +8,13 @@ This is the original source: [http://oauth.googlecode.com/svn/code/csharp/OAuthB
 
 ### Cryptography API Changes
 
+ - TODO: before and after code snippets
+ 
 ### Access Modifiers
+
+ - No public fields allowed
+ - `protected` and `virtual` are frowned upon
+ - TODO: other samples
 
 ### "value" is a dirty word
 
