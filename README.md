@@ -12,9 +12,73 @@ This is the original source: [http://oauth.googlecode.com/svn/code/csharp/OAuthB
  
 ### Access Modifiers
 
- - No public fields allowed
- - `protected` and `virtual` are frowned upon
- - TODO: other samples
+#### No public fields allowed
+
+This requires some notes on how the Windows Runtime type system works...
+
+#### `protected` and `virtual` are frowned upon
+
+Consider a class which is intended to be overriden:
+
+    protected class QueryParameter
+    {
+        public QueryParameter(string key, string value)
+        {
+            Name = key;
+            Value = val;
+        }
+
+        ...
+    }
+
+This will raise a compiler error:
+
+    Elements defined in a namespace cannot be explicitly declared as private, protected, or protected internal
+
+And the fix for that is fairly easy:
+
+    internal class QueryParameter
+    {
+        public QueryParameter(string key, string value)
+        {
+            Name = key;
+            Value = val;
+        }
+
+        ...
+    }
+
+#### public classes must be sealed
+
+    public class QueryParameter
+    {
+        public QueryParameter(string key, string value)
+        {
+            Name = key;
+            Value = val;
+        }
+
+        ...
+    }
+
+This code raises a compiler error:
+
+    Exporting unsealed types is not supported. Please mark type 'OAuth.QueryParameter' as sealed.
+
+And the fix for that is fairly easy:
+
+    public sealed class QueryParameter
+    {
+        public QueryParameter(string key, string value)
+        {
+            Name = key;
+            Value = val;
+        }
+
+        ...
+    }
+
+**TODO:** other samples
 
 ### "value" is a dirty word
 
